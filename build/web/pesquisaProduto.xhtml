@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:decorate xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"    
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      template="/resources/template.xhtml">
+    
+    
+        <f:event listener="#{produto.buscar()}" type="preRenderView" />
+        <h3>Pesquisa De Produtos</h3>
+        <h:form id="frmToolbar" >
+            <p:toolbar>
+                <p:toolbarGroup >
+                    <p:commandButton value="Buscar" /> 
+                </p:toolbarGroup>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="Novo" /> 
+                </p:toolbarGroup>
+            </p:toolbar>
+        </h:form>
+        
+        <h
+
+        <h:form id="frmTabelaProdutos">
+            <p:dataTable id="tabelaProdutos" value="#{produto.listaEntidade}" var="prod" emptyMessage="Sem produtos cadastrados">
+                <p:column headerText="ID" >
+                    <p:outputLabel value="#{prod.id}" />
+                </p:column>
+                <p:column headerText="Descrição" >
+                    <p:outputLabel value="#{prod.nomeProduto}" />
+                </p:column>
+                <p:column headerText="Valor Unitário" >
+                    <h:outputText value="#{prod.preco}">
+                <f:convertNumber type="currency" currencySymbol="R$" />
+            </h:outputText>
+                </p:column>
+                <p:column headerText="Categoria" >
+                    <p:outputLabel value="#{prod.codCategoria}" />
+                </p:column>
+                <p:column headerText="Estoque" >
+                    <p:outputLabel value="5" />
+                </p:column>
+                <p:column headerText="" >
+                    <p:commandButton title="Editar" icon="ui-icon-refresh" />
+                    <p:commandButton title="Excluir" oncomplete="PF('dlgProd').show()" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        
+        <h:form id="frmDlgProd">
+            <p:dialog widgetVar="dlgProd" >
+                <p:outputLabel value="Quer mesmo excluir o produto ?#{prod.nomeProduto}" />
+                <p:commandButton title="Sim" icon="ui-icon-ok"/>
+                <p:commandButton title="Não" icon="ui-icon-cancel"/>            
+            </p:dialog>     
+        </h:form>
+        
+    
+</ui:decorate>
+

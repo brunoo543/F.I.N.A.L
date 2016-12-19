@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <style>
+            .semBorda tr, .semBorda td {
+                border: none !important;
+            }
+        </style>
+    </h:head>
+    <f:event listener="#{mesa.buscar()}" type="preRenderView" /> 
+    <h:body>       
+        <p:layout >
+            <p:layoutUnit position="north" resizable="true" style="min-height: 200px;min-width: 200px" >
+                <p:graphicImage url="/resources/a.jpg" />               
+            </p:layoutUnit>
+            <p:layoutUnit position="center" >
+                <h:form id="frmToolbar" >
+            <p:toolbar>
+                <p:toolbarGroup >
+                    <p:commandButton value="Produtos" oncomplete="PF('dlgCadProd').show()" action="#{cat.buscar()}" 
+                                     update=":frmCadProd:categoria"/>
+                    <p:commandButton value="Estoque" />
+                </p:toolbarGroup>
+            </p:toolbar>            
+        </h:form>
+
+        <h:form id="frmListaMesas">
+            <p:panelGrid columns="3" styleClass="semBorda" >
+                <c:forEach id="lista" items="#{mesa.listaEntidade}" var="lista" >
+                    <p:commandButton value="#{lista.numeroMesa}" action="#{mesa.editar(lista)}" 
+                                     oncomplete="PF('dlgDetails').show()" update=":frmDetails" style="width: 120px" 
+                                     title="#{lista.numeroMesa}"/>
+                </c:forEach>
+            </p:panelGrid>
+            <p:commandButton value="Adiconar" oncomplete="PF('dlgCadMesa').show()" />
+        </h:form>
+     
+            </p:layoutUnit>
+        </p:layout>
+        
+         <h:form id="frmCadastroMesas" >
+
+            <p:dialog widgetVar="dlgCadMesa" modal="true" resizable="true"  height="500" width="700"  >
+                <p:panelGrid columns="1" id="panel">
+                    <p:inputMask value="#{mesa.entidade.numeroMesa}" placeholder="Numero" mask="9?9" />
+                    <p:commandButton title="Salvar" icon="ui-icon-check" actionListener="#{mesa.salvar()}" 
+                                     action="#{mesa.buscar()}" update=":frmListaMesas @form" />
+
+                </p:panelGrid>
+            </p:dialog>  
+
+        </h:form> 
+        
+        <h:form id="frmCadProd">
+            <p:growl id="gr" />
+            <p:dialog widgetVar="dlgCadProd" resizable="false" modal="true" closeOnEscape="true" >
+                <p:panelGrid columns="2" >
+                    <p:outputLabel value="Nome :" for="nome" />
+                    <p:inputText id="nome" value="#{produto.entidade.nomeProduto}" maxlength="250" required="true"/> 
+                    <p:outputLabel value="Preço :" for="preco" />
+                    <p:inputText id="preco" value="#{produto.entidade.preco}" required="true"/>   
+                    <p:outputLabel value="Cod Categoria :" for="categoria" />
+                    <h:panelGroup >
+                        <p:selectOneMenu id="categoria" value="#{produto.entidade.codCategoria}" >
+                        <f:selectItem itemLabel="Selecione" itemValue=""/>
+                        <f:selectItems value="#{cat.listaEntidade}" var="listCat" 
+                                       itemLabel="#{listCat.nome}" itemValue="#{listCat.id}" />
+                    </p:selectOneMenu>
+                        <p:commandButton icon="ui-icon-plus" title="Nova Categoria" oncomplete="PF('dlgCadCat').show()" />
+                        </h:panelGroup>
+                    <p:commandButton icon="ui-icon-disk" action="#{produto.salvar()}" update="gr"/>
+                </p:panelGrid>
+            </p:dialog>
+        </h:form>
+        
+        <h:form id="frmCadCat">
+            <p:growl id="gr" />
+            <p:dialog widgetVar="dlgCadCat" modal="true" >
+                <p:inputText value="#{cat.entidade.nome}" />
+                <p:commandButton icon="ui-icon-disk" action="#{cat.salvar()}" update="gr"/>
+            </p:dialog> 
+        </h:form>
+        
+        <h:form id="frmDetails">
+            <p:dialog widgetVar="dlgDetails" width="1000" height="800" modal="true" draggable="false" resizable="false" closeOnEscape="true" 
+                      >
+                <p:growl id="gr"/>
+                <p:layout >
+                    <p:layoutUnit position="west" >
+                        <p:panelGrid columns="1" id="panel" styleClass="semBorda">
+                            <p:commandButton title="Salvar" icon="ui-icon-check" actionListener="#{mesa.salvar()}" 
+                                             action="#{mesa.buscar()}" update=":frmListaMesas @form" 
+                                             />
+                            <p:commandButton icon="ui-icon-trash" title="Excluir" actionListener="#{mesa.excluir()}" update="@form
+                                             :frmListaMesas" action="#{mesa.buscar()}"/>
+                            <p:commandButton icon="ui-icon-refresh" title="Carregar" update="tabelaMesa" action="#{mesa.buscar()}"/>
+                        </p:panelGrid>
+                    </p:layoutUnit> 
+                    <p:layoutUnit position="center" >
+                        <p:dataTable id="tabelaMesa"  >
+                            <p:column headerText="ID" >
+                                
+                            </p:column>
+                            <p:column headerText="Data" >
+                                
+                            </p:column>
+                            <p:column headerText="Valor Total" >
+                                
+                            </p:column>
+                            <p:column  >
+                                <p:commandButton value="Detalhes" />
+                            </p:column>
+                            
+                        </p:dataTable>
+                    </p:layoutUnit>
+                    
+                    <p:layoutUnit position="north" >
+                        <p:outputLabel value="ID : #{mesa.entidade.id}" />
+                        <p:outputLabel id="idmesa" value="Numero : #{mesa.entidade.numeroMesa}" />
+                                                
+                    </p:layoutUnit>
+                </p:layout>
+            </p:dialog>
+        </h:form>
+        
+    </h:body>
+</html>
+
